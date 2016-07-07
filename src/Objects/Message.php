@@ -111,11 +111,13 @@ class Message
 
     /**
      * @param string $content_type
+     *
      * @return Message
      */
     public function setContentType($content_type)
     {
         $this->content_type = $content_type;
+
         return $this;
     }
 
@@ -129,11 +131,13 @@ class Message
 
     /**
      * @param string $content_encoding
+     *
      * @return Message
      */
     public function setContentEncoding($content_encoding)
     {
         $this->content_encoding = $content_encoding;
+
         return $this;
     }
 
@@ -147,11 +151,13 @@ class Message
 
     /**
      * @param array $application_headers
+     *
      * @return Message
      */
     public function setApplicationHeaders($application_headers)
     {
         $this->application_headers = $application_headers;
+
         return $this;
     }
 
@@ -165,11 +171,13 @@ class Message
 
     /**
      * @param int $delivery_mode
+     *
      * @return Message
      */
     public function setDeliveryMode($delivery_mode)
     {
         $this->delivery_mode = $delivery_mode;
+
         return $this;
     }
 
@@ -183,11 +191,13 @@ class Message
 
     /**
      * @param int $priority
+     *
      * @return Message
      */
     public function setPriority($priority)
     {
         $this->priority = $priority;
+
         return $this;
     }
 
@@ -201,11 +211,13 @@ class Message
 
     /**
      * @param string $correlation_id
+     *
      * @return Message
      */
     public function setCorrelationId($correlation_id)
     {
         $this->correlation_id = $correlation_id;
+
         return $this;
     }
 
@@ -219,11 +231,13 @@ class Message
 
     /**
      * @param string $reply_to
+     *
      * @return Message
      */
     public function setReplyTo($reply_to)
     {
         $this->reply_to = $reply_to;
+
         return $this;
     }
 
@@ -237,11 +251,13 @@ class Message
 
     /**
      * @param string $expiration
+     *
      * @return Message
      */
     public function setExpiration($expiration)
     {
         $this->expiration = $expiration;
+
         return $this;
     }
 
@@ -255,11 +271,13 @@ class Message
 
     /**
      * @param string $message_id
+     *
      * @return Message
      */
     public function setMessageId($message_id)
     {
         $this->message_id = $message_id;
+
         return $this;
     }
 
@@ -273,11 +291,13 @@ class Message
 
     /**
      * @param \DateTimeInterface $timestamp
+     *
      * @return Message
      */
     public function setTimestamp($timestamp)
     {
         $this->timestamp = $timestamp;
+
         return $this;
     }
 
@@ -291,11 +311,13 @@ class Message
 
     /**
      * @param string $type
+     *
      * @return Message
      */
     public function setType($type)
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -309,11 +331,13 @@ class Message
 
     /**
      * @param string $user_id
+     *
      * @return Message
      */
     public function setUserId($user_id)
     {
         $this->user_id = $user_id;
+
         return $this;
     }
 
@@ -327,11 +351,13 @@ class Message
 
     /**
      * @param string $app_id
+     *
      * @return Message
      */
     public function setAppId($app_id)
     {
         $this->app_id = $app_id;
+
         return $this;
     }
 
@@ -345,11 +371,13 @@ class Message
 
     /**
      * @param string $cluster_id
+     *
      * @return Message
      */
     public function setClusterId($cluster_id)
     {
         $this->cluster_id = $cluster_id;
+
         return $this;
     }
 
@@ -375,6 +403,7 @@ class Message
         $this->fillParameters('cluster_id', $parameters);
 
         $amqpMessage = new AMQPMessage($this->body, $parameters);
+
         return $amqpMessage;
     }
 

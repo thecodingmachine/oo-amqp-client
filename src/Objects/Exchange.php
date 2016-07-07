@@ -5,7 +5,6 @@ namespace Mouf\AmqpClient\Objects;
 use Mouf\AmqpClient\Client;
 use Mouf\AmqpClient\RabbitMqObjectInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Message\AMQPMessage;
 
 class Exchange implements RabbitMqObjectInterface
 {
@@ -54,7 +53,7 @@ class Exchange implements RabbitMqObjectInterface
      *
      * @var bool
      */
-    private $internal = falsel;
+    private $internal = false;
 
     /**
      * No wait.
