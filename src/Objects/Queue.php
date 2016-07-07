@@ -17,6 +17,12 @@ class Queue implements RabbitMqObjectInterface{
 	private $source;
 	
 	/**
+	 * Queue name
+	 * @var String
+	 */
+	private $name;
+	
+	/**
 	 * Queue
 	 * @var string
 	 */
@@ -44,19 +50,13 @@ class Queue implements RabbitMqObjectInterface{
 	 * Auto delete
 	 * @var bool
 	 */
-	private $auto_delete = false;
+	private $autoDelete = false;
 	
 	/**
 	 * No wait
 	 * @var bool
 	 */
-	private $nowait = false;
-	
-	/**
-	 * Arguments
-	 * @var null|array
-	 */
-	private $arguments = null;
+	private $autoDelete = false;
 	
 	/**
 	 * Ticket
@@ -65,10 +65,46 @@ class Queue implements RabbitMqObjectInterface{
 	private $ticket = null;
 	
 	/**
-	 *
+	 *R abbitMq specific parameter : x-dead-letter-exchange
 	 * @var Queue
 	 */
-	private $deadLetterQueue;
+	private $deadLetterQueue = null;
+	
+	/**
+	 * RabbitMq specific parameter : confirm
+	 * @var int
+	 */
+	private $confirm = null;
+	
+	/**
+	 * RabbitMq specific parameter : consumer_cancel_notify 
+	 * @var bool
+	 */
+	private $consumerCancelNotify = null;
+	
+	/**
+	 * RabbitMq specific parameter : alternate-exchange 
+	 * @var Queue
+	 */
+	private $alternateExchange = null;
+	
+	/**
+	 * RabbitMq specific parameter : x-message-ttl 
+	 * @var int
+	 */
+	private $ttl = null;
+	
+	/**
+	 * RabbitMq specific parameter : x-max-length 
+	 * @var int
+	 */
+	private $maxLength = null;
+	
+	/**
+	 * RabbitMq specific parameter : x-max-priority 
+	 * @var int
+	 */
+	private $maxPriority = null;
 	
 	/**
 	 * Parameter to initialize object only one time
@@ -79,17 +115,19 @@ class Queue implements RabbitMqObjectInterface{
 	/**
 	 * Set the source (Binding)
 	 * @param Binding $source
+	 * @param string $name
 	 */
-	public function __contruct(Binding $source) {
+	public function __contruct(Binding $source, $name) {
 		$this->source = $source;
+		$this->name = $name;
 	}
-	
+
 	/**
-	 * Set the dead letter queue
-	 * @param Queue $queue
+	 * Get queue name
+	 * @return string
 	 */
-	public function setDeadLetterQueue(Queue $queue) {
-		$this->deadLetterQueue = $queue;
+	public function getName() {
+		return $this->name;
 	}
 
 	/**
@@ -147,38 +185,38 @@ class Queue implements RabbitMqObjectInterface{
 	}
 	
 	/**
-	 * Get auto_delete
+	 * Get autoDelete
 	 * @return bool
 	 */
 	public function getAutoDelete() {
-		return $this->auto_delete;
+		return $this->autoDelete;
 	}
 	
 	/**
-	 * Set auto_delete
-	 * @param bool $auto_delete
+	 * Set autoDelete
+	 * @param bool $autoDelete
 	 * @return Queue
 	 */
-	public function setAutoDelete($auto_delete) {
-		$this->auto_delete = $auto_delete;
+	public function setAutoDelete($autoDelete) {
+		$this->autoDelete = $autoDelete;
 		return $this;
 	}
 	
 	/**
-	 * Get nowait
+	 * Get noWait
 	 * @return bool
 	 */
-	public function getNowait() {
-		return $this->nowait;
+	public function getNoWait() {
+		return $this->noWait;
 	}
 	
 	/**
-	 * Set nowait
-	 * @param bool $nowait
+	 * Set noWait
+	 * @param bool $noWait
 	 * @return Queue
 	 */
-	public function setNowait($nowait) {
-		$this->nowait = $nowait;
+	public function setNoWait($noWait) {
+		$this->noWait = $noWait;
 		return $this;
 	}
 	
@@ -217,15 +255,166 @@ class Queue implements RabbitMqObjectInterface{
 		$this->ticket = $ticket;
 		return $this;
 	}
+
+	/**
+	 * Get RabbitMq specific parameter : dead letter queue
+	 * @return Queue
+	 */
+	public function getDeadLetterQueue() {
+		return $this->deadLetterQueue;
+	}
 	
+	/**
+	 * Set RabbitMq specific parameter : dead letter queue
+	 * @param Queue $queue
+	 * @return Queue
+	 */
+	public function setDeadLetterQueue(Queue $queue) {
+		$this->deadLetterQueue = $queue;
+		return $this;
+	}
+	
+	/**
+	 * Get RabbitMq specific parameter : confirm
+	 * @return int
+	 */
+	public function getConfirm() {
+		return $this->confirm;
+	}
+	
+	/**
+	 * Set RabbitMq specific parameter : confirm
+	 * @param int $confirm
+	 * @return Queue
+	 */
+	public function setConfirm($confirm) {
+		$this->confirm = $confirm;
+		return $this;
+	}
+	
+	/**
+	 * Get RabbitMq specific parameter : consumer_cancel_notify
+	 * @return bool
+	 */
+	public function getConsumerCancelNotify() {
+		return $this->consumerCancelNotify;
+	}
+	
+	/**
+	 * Set RabbitMq specific parameter : consumer_cancel_notify
+	 * @param Queue $consumerCancelNotify
+	 * @return Queue
+	 */
+	public function setConsumerCancelNotify(Queue $consumerCancelNotify) {
+		$this->consumerCancelNotify = $consumerCancelNotify;
+		return $this;
+	}
+	
+	/**
+	 * Get RabbitMq specific parameter : alternate_exchange
+	 * @return Queue
+	 */
+	public function getAlternateExchange() {
+		return $this->alternateExchange;
+	}
+	
+	/**
+	 * Set RabbitMq specific parameter : alternate_exchange
+	 * @param Queue $alternateExchange
+	 * @return Queue
+	 */
+	public function setAlternateExchange(Queue $alternateExchange) {
+		$this->alternateExchange = $alternateExchange;
+		return $this;
+	}
+	
+	/**
+	 * Get RabbitMq specific parameter : ttl
+	 * @return int
+	 */
+	public function getTtl() {
+		return $this->ttl;
+	}
+	
+	/**
+	 * Set RabbitMq specific parameter : ttl
+	 * @param int $ttl
+	 * @return Queue
+	 */
+	public function setTtl($ttl) {
+		$this->ttl = $ttl;
+		return $this;
+	}
+	
+	/**
+	 * Get RabbitMq specific parameter : max length
+	 * @return int
+	 */
+	public function getMaxLength() {
+		return $this->maxLength;
+	}
+	
+	/**
+	 * Set RabbitMq specific parameter : max length
+	 * @param int $ttl
+	 * @return Queue
+	 */
+	public function setMaxLength($maxLength) {
+		$this->maxLength = $maxLength;
+		return $this;
+	}
+	
+	/**
+	 * Get RabbitMq specific parameter : max priority
+	 * @return int
+	 */
+	public function getMaxPriority() {
+		return $this->maxPriority;
+	}
+	
+	/**
+	 * Set RabbitMq specific parameter : max priority
+	 * @param int $maxPriority
+	 * @return Queue
+	 */
+	public function setMaxPriority($maxPriority) {
+		$this->maxPriority = $maxPriority;
+		return $this;
+	}
 	
 	
 	public function init(AMQPChannel $amqpChannel) {
 		if(!$this->init) {
 			$this->source->init($amqpChannel);
 			$this->deadLetterQueue->init($amqpChannel);
-			//TODO wip
-			//$amqpChannel->queue_declare($this->name, false, true, false, false, false, array('x-dead-letter-exchange' => array('S', $this->exchanger), 'x-max-priority' => ['I', $this->exchanger]));
+			
+			$parameters = [];
+			if($this->alternateExchange !== null) {
+				$parameters['alternate-exchange'] = $this->alternateExchange->getName();
+			}
+			if($this->confirm !== null) {
+				$parameters['confirm'] = $this->confirm;
+			}
+			if($this->consumerCancelNotify !== null) {
+				$parameters['consumer_cancel_notify'] = $this->consumerCancelNotify;
+			}
+			if($this->deadLetterQueue !== null) {
+				$parameters['x-dead-letter-exchange'] = $this->deadLetterQueue->getName();
+			}
+			if($this->maxLength) {
+				$parameters['x-max-length'] = $this->maxLength;
+			}
+			if($this->maxPriority) {
+				$parameters['x-max-priority'] = $this->maxPriority;
+			}
+			if($this->ttl) {
+				$parameters['x-message-ttl'] = $this->ttl;
+			}
+			
+			if(!$parameters) {
+				$parameters = null;
+			}
+			$amqpChannel->queue_declare($this->name, $this->passive, $this->durable, $this->exclusive, $this->autoDelete, $this->noWait, $parameters);
 			
 			$this->init = true;
 		}
@@ -235,5 +424,4 @@ class Queue implements RabbitMqObjectInterface{
 	public function comsume() {
 	
 	}
-	
 }
