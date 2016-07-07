@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Mouf\AmqpClient\Objects;
-
 
 use Mouf\AmqpClient\Client;
 
@@ -19,7 +17,5 @@ class ExchangeTest extends \PHPUnit_Framework_TestCase
         $client->setPrefetchCount(1);
 
         $exchange = new Exchange('test_exchange', 'fanout');
-
-
     }
 }
