@@ -292,12 +292,12 @@ class Exchange implements RabbitMqObjectInterface
         }
     }
 
-    public function publish(AMQPMessage $message, $routingKey, $mandatory = false,
+    public function publish(Message $message, $routingKey, $mandatory = false,
                             $immediate = false,
                             $ticket = null)
     {
         $channel = $this->client->getChannel();
 
-        $channel->basic_publish($message, $this->name, $routingKey, $mandatory, $immediate, $ticket);
+        $channel->basic_publish($message->toAMQPMessage(), $this->name, $routingKey, $mandatory, $immediate, $ticket);
     }
 }
