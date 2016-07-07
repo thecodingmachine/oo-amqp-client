@@ -4,6 +4,11 @@ namespace Mouf\AmqpClient;
 
 use Mouf\AmqpClient\Objects\Queue;
 
+/**
+ * Function to consume RabbitMq queue.
+ * 
+ * @author Marc Teyssier
+ */
 class ConsumerService
 {
     /**
@@ -21,8 +26,13 @@ class ConsumerService
      */
     public function __construct(Client $client, $queues)
     {
+        $this->client = $client;
+        $this->queues = $queues;
     }
 
+    /**
+     * Call this function in your script to consume the RabbitMq queue.
+     */
     public function run()
     {
         foreach ($this->queues as $queue) {
