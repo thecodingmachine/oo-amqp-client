@@ -53,7 +53,7 @@ class Exchange implements RabbitMqObjectInterface
      *
      * @var bool
      */
-    private $internal = falsel;
+    private $internal = false;
 
     /**
      * No wait.
