@@ -73,7 +73,7 @@ class Client
     /**
      * List of RabbitMq object.
      *
-     * @var RabbitMqObjectInterface
+     * @var RabbitMqObjectInterface[]
      */
     private $rabbitMqObjects = [];
 

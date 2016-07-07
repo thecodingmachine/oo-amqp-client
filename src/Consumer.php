@@ -12,37 +12,37 @@ class Consumer implements ConsumerInterface
     /**
      * @var string
      */
-    private $consumerTag;
+    private $consumerTag = '';
 
     /**
      * @var bool
      */
-    private $noLocal;
+    private $noLocal = false;
 
     /**
      * @var bool
      */
-    private $noAck;
+    private $noAck = false;
 
     /**
      * @var bool
      */
-    private $exclusive;
+    private $exclusive = false;
 
     /**
      * @var bool
      */
-    private $noWait;
+    private $noWait = false;
 
     /**
      * @var array
      */
-    private $arguments;
+    private $arguments = [];
 
     /**
      * @var int
      */
-    private $ticket;
+    private $ticket = null;
 
     /**
      * Consumer constructor.
@@ -61,7 +61,15 @@ class Consumer implements ConsumerInterface
     {
         $callback = $this->callback;
 
-        return $callback($msg);
+        try {
+            $callback($msg);
+
+            $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
+        } catch (RetryableExceptionInterface $e) {
+            $msg->delivery_info['channel']->basic_nack($msg->delivery_info['delivery_tag'], true, true);
+        } catch (\Exception $e) {
+            $msg->delivery_info['channel']->basic_nack($msg->delivery_info['delivery_tag'], true, false);
+        }
     }
 
     /**

@@ -6,6 +6,7 @@ use Mouf\AmqpClient\Client;
 use Mouf\AmqpClient\RabbitMqObjectInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
 use Mouf\AmqpClient\ConsumerInterface;
+use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * @author Marc
@@ -23,13 +24,6 @@ class Queue implements RabbitMqObjectInterface
      * @var string
      */
     private $name;
-
-    /**
-     * Queue.
-     *
-     * @var string
-     */
-    private $queue = '';
 
     /**
      * Passive.
@@ -545,7 +539,7 @@ class Queue implements RabbitMqObjectInterface
                                     $consumer->isNoAck(),
                                     $consumer->isExclusive(),
                                     $consumer->isNoWait(),
-                                    function ($msg) use ($consumer) {
+                                    function (AMQPMessage $msg) use ($consumer) {
                                         $consumer->callback($msg);
                                     },
                                     $consumer->getTicket(),

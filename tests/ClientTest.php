@@ -5,6 +5,7 @@ namespace Mouf\AmqpClient\Objects;
 use Mouf\AmqpClient\Client;
 use Mouf\AmqpClient\Consumer;
 use Mouf\AmqpClient\ConsumerService;
+use PhpAmqpLib\Message\AMQPMessage;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,6 +15,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     private $client;
     private $exchange;
     private $queue;
+    private $msgReceived;
 
     protected function setUp()
     {
@@ -27,8 +29,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $this->exchange = new Exchange($this->client, 'test_exchange', 'fanout');
         $this->queue = new Queue($this->client, 'test_queue', [
-            new Consumer(function($msg) {
-                var_dump($msg);
+            new Consumer(function(AMQPMessage $msg) {
+                $this->msgReceived = $msg;
             })
         ]);
         $this->queue->setDurable(true);
@@ -53,6 +55,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             $this->queue
         ]);
 
-        $consumerService->run();
+        $consumerService->run(true);
+
+        $this->assertEquals('my message', $this->msgReceived->getBody());
     }
 }
