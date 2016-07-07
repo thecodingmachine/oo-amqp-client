@@ -1,6 +1,7 @@
 <?php
 namespace Mouf\AmqpClient\Objects;
 
+use Mouf\AmqpClient\Client;
 use Mouf\AmqpClient\RabbitMqObjectInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
 
@@ -12,9 +13,9 @@ class Queue implements RabbitMqObjectInterface{
 
 	/**
 	 * 
-	 * @var Binding
+	 * @var Client
 	 */
-	private $source;
+	private $client;
 	
 	/**
 	 * Queue name
@@ -114,11 +115,12 @@ class Queue implements RabbitMqObjectInterface{
 	
 	/**
 	 * Set the source (Binding)
-	 * @param Binding $source
+	 * @param Client $client
 	 * @param string $name
 	 */
-	public function __contruct(Binding $source, $name) {
-		$this->source = $source;
+	public function __construct(Client $client, $name) {
+		$this->client = $client;
+		$this->client->register($this);
 		$this->name = $name;
 	}
 
@@ -385,7 +387,6 @@ class Queue implements RabbitMqObjectInterface{
 	
 	public function init(AMQPChannel $amqpChannel) {
 		if(!$this->init) {
-			$this->source->init($amqpChannel);
 			$this->deadLetterQueue->init($amqpChannel);
 			
 			$parameters = [];

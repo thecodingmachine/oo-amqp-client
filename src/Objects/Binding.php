@@ -58,7 +58,7 @@ class Binding implements RabbitMqObjectInterface
      * @param Exchange $source
      * @param Queue    $to
      */
-    public function __contruct(Exchange $source, Queue $to)
+    public function __construct(Exchange $source, Queue $to)
     {
         $this->source = $source;
         $this->to = $to;

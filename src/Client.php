@@ -158,6 +158,13 @@ class Client
         $this->rabbitMqObjects = $rabbitMqObjects;
     }
 
+	public function register(RabbitMqObjectInterface $object)
+	{
+		if (!in_array($object, $this->rabbitMqObjects, true)) {
+			$this->rabbitMqObjects[] = $object;
+		}
+	}
+
     /**
      * Connection to the RabbitMq service with AMQPStreamConnection.
      *
@@ -170,8 +177,8 @@ class Client
 
             $this->channel = $this->connection->channel();
 
-            if ($this->prefetchCount !== null || $this->prefetchCount !== null || $this->aGlobal !== null) {
-                $this->channel->basic_qos(null, 1, null);
+            if ($this->prefetchSize !== null || $this->prefetchCount !== null || $this->aGlobal !== null) {
+                $this->channel->basic_qos($this->prefetchSize, $this->prefetchCount, $this->aGlobal);
             }
 
             foreach ($this->rabbitMqObjects as $rabbitMqObject) {

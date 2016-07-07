@@ -87,13 +87,14 @@ class Exchange implements RabbitMqObjectInterface
     /**
      * Set the to (Binding).
      *
-     * @param Binding $to
+     * @param Client $to
      * @param string  $name
      * @param string  $type direct, topic, headers or fanout
      */
     public function __construct(Client $client, $name, $type)
     {
         $this->client = $client;
+		$this->client->register($this);
         $this->name = $name;
         $this->type = $type;
     }
