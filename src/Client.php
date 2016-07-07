@@ -56,7 +56,7 @@ class Client {
 	
 	/**
 	 * RabbitMq channel
-	 * @var AMQPChannel
+	 * @var \AMQPChannel
 	 */
 	private $channel = null;
 	
@@ -68,7 +68,7 @@ class Client {
 	
 	public function __construct($host, $port, $user, $password) {
 		$this->host = $host;
-		$this->port = $port;
+		$this->port = ($port !== null) ? $port : 5672;
 		$this->user = $user;
 		$this->password = $password;
 	}
@@ -137,8 +137,10 @@ class Client {
 	
 	/**
 	 * Connection to the RabbitMq service with AMQPStreamConnection
+	 *
+	 * @return AMQPChannel
 	 */
-	private function getConnection() {
+	public function getChannel() {
 		if(!$this->connection) {
 			$this->connection = new AMQPStreamConnection($this->host, $this->port, $this->user, $this->password);
 
@@ -152,7 +154,7 @@ class Client {
 				$rabbitMqObject->init($this->channel);
 			}
 		}
-		return $this->connection;
+		return $this->channel;
 	}
 	
 }

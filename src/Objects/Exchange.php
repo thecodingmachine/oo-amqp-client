@@ -1,17 +1,18 @@
 <?php
 namespace Mouf\AmqpClient\Objects;
 
+use Mouf\AmqpClient\Client;
 use Mouf\AmqpClient\RabbitMqObjectInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Message\AMQPMessage;
 
 class Exchange implements RabbitMqObjectInterface{
 
 	/**
-	 * 
-	 * @var Binding
+	 * @var Client
 	 */
-	private $to;
-	
+	private $client;
+
 	/**
 	 * Name
 	 * @var string
@@ -78,8 +79,10 @@ class Exchange implements RabbitMqObjectInterface{
 	 * @param string $name
 	 * @param string $type direct, topic, headers or fanout
 	 */
-	public function __contruct(Binding $to, $name, $type) {
-		$this->to = $to;
+	public function __construct(Client $client, $name, $type) {
+		$this->client = $client;
+		$this->name = $name;
+		$this->type = $type;
 	}
 
 	/**
@@ -231,8 +234,12 @@ class Exchange implements RabbitMqObjectInterface{
 		}
 	}
 	
-	public function publish($message) {
-		
+	public function publish(AMQPMessage $message, $routingKey, $mandatory = false,
+							$immediate = false,
+							$ticket = null) {
+		$channel = $this->client->getChannel();
+
+		$channel->basic_publish($message, $this->name, $routingKey, $mandatory, $immediate, $ticket);
 	}
 	
 }

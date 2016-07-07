@@ -20,6 +20,7 @@
     <php>
         <!-- "Real" test RabbitMQ -->
         <var name="rabbitmq_host" value="localhost" />
+        <var name="rabbitmq_port" value="5672" />
         <var name="rabbitmq_user" value="guest" />
         <var name="rabbitmq_password" value="guest" />
     </php>
