@@ -38,8 +38,8 @@ To run the tests:
 vendor/bin/phpunit
 ```
 
-Obviously, you need a running RabbitMQ server to test this package. If you use Docker, you can fetch one using:
+Obviously, you need a running RabbitMQ server to test this package. If you use Docker, you can start one using:
 
 ```sh
-docker run -d -p 5672:5672 -p 15672:15672 rabbitmq
+docker run -p 5672:5672 -p 15672:15672 rabbitmq:management
 ```

@@ -68,11 +68,11 @@ class Queue implements RabbitMqObjectInterface
     private $ticket = null;
 
     /**
-     *R abbitMq specific parameter : x-dead-letter-exchange.
+     * RabbitMq specific parameter : x-dead-letter-exchange.
      *
-     * @var Queue
+     * @var Exchange
      */
-    private $deadLetterQueue = null;
+    private $deadLetterExchanger = null;
 
     /**
      * RabbitMq specific parameter : confirm.
@@ -326,21 +326,21 @@ class Queue implements RabbitMqObjectInterface
      *
      * @return Queue
      */
-    public function getDeadLetterQueue()
+    public function getDeadLetterExchanger()
     {
-        return $this->deadLetterQueue;
+        return $this->deadLetterExchanger;
     }
 
     /**
      * Set RabbitMq specific parameter : dead letter queue.
      *
-     * @param Queue $queue
+     * @param Exchange $exchange
      *
      * @return Queue
      */
-    public function setDeadLetterQueue(Queue $queue)
+    public function setDeadLetterExchange(Exchange $exchange)
     {
-        $this->deadLetterQueue = $queue;
+        $this->deadLetterExchanger = $exchange;
 
         return $this;
     }
@@ -492,31 +492,31 @@ class Queue implements RabbitMqObjectInterface
     public function init(AMQPChannel $amqpChannel)
     {
         if (!$this->init) {
-            if ($this->deadLetterQueue) {
-                $this->deadLetterQueue->init($amqpChannel);
+            if ($this->deadLetterExchanger) {
+                $this->deadLetterExchanger->init($amqpChannel);
             }
 
             $parameters = [];
             if ($this->alternateExchange !== null) {
-                $parameters['alternate-exchange'] = $this->alternateExchange->getName();
+                $parameters['alternate-exchange'] = ['S', $this->alternateExchange->getName()];
             }
             if ($this->confirm !== null) {
-                $parameters['confirm'] = $this->confirm;
+                $parameters['confirm'] = ['I', $this->confirm];
             }
             if ($this->consumerCancelNotify !== null) {
-                $parameters['consumer_cancel_notify'] = $this->consumerCancelNotify;
+                $parameters['consumer_cancel_notify'] = ['I', $this->consumerCancelNotify];
             }
-            if ($this->deadLetterQueue !== null) {
-                $parameters['x-dead-letter-exchange'] = $this->deadLetterQueue->getName();
+            if ($this->deadLetterExchanger !== null) {
+                $parameters['x-dead-letter-exchange'] = ['S', $this->deadLetterExchanger->getName()];
             }
             if ($this->maxLength) {
-                $parameters['x-max-length'] = $this->maxLength;
+                $parameters['x-max-length'] = ['I', $this->maxLength];
             }
             if ($this->maxPriority) {
-                $parameters['x-max-priority'] = $this->maxPriority;
+                $parameters['x-max-priority'] = ['I', $this->maxPriority];
             }
             if ($this->ttl) {
-                $parameters['x-message-ttl'] = $this->ttl;
+                $parameters['x-message-ttl'] = ['I', $this->ttl];
             }
 
             if (!$parameters) {

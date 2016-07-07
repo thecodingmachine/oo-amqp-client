@@ -14,10 +14,23 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     private $client;
     private $exchange;
+    /**
+     * @var Queue
+     */
     private $queue;
+    /**
+     * @var Exchange
+     */
+    private $deadLetterExchange;
+    /**
+     * @var Queue
+     */
+    private $deadLetterQueue;
     private $msgReceived;
+    private $deadLetterMsgReceived;
+    private $triggerException = false;
 
-    protected function setUp()
+    protected function init()
     {
         global $rabbitmq_host;
         global $rabbitmq_port;
@@ -31,18 +44,35 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->queue = new Queue($this->client, 'test_queue', [
             new Consumer(function(AMQPMessage $msg) {
                 $this->msgReceived = $msg;
+                if ($this->triggerException) {
+                    throw new \Exception('boom!');
+                }
             })
         ]);
         $this->queue->setDurable(true);
 
         $binding = new Binding($this->exchange, $this->queue);
         $this->client->register($binding);
+
+
+        $this->deadLetterExchange = new Exchange($this->client, 'test_dead_letter_exchange', 'fanout');
+
+        $this->deadLetterQueue = new Queue($this->client, 'test_dead_letter_queue', [
+            new Consumer(function(AMQPMessage $msg) {
+                $this->deadLetterMsgReceived = $msg;
+            })
+        ]);
+        $this->deadLetterQueue->setDurable(true);
+
+        $this->queue->setDeadLetterExchange($this->deadLetterExchange);
+
+        $binding = new Binding($this->deadLetterExchange, $this->deadLetterQueue);
+        $this->client->register($binding);
     }
-
-
 
     public function testExchange()
     {
+        $this->init();
         $this->exchange->publish(new Message('my message'), 'key');
     }
 
@@ -51,6 +81,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testQueue()
     {
+        $this->init();
+
         $consumerService = new ConsumerService($this->client, [
             $this->queue
         ]);
@@ -59,4 +91,28 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('my message', $this->msgReceived->getBody());
     }
+
+
+    /**
+     * @depends testExchange
+     */
+    public function testDeadLetterQueue()
+    {
+        $this->init();
+
+        $this->exchange->publish(new Message('my other message'), 'key');
+
+        $this->triggerException = true;
+
+        $consumerService = new ConsumerService($this->client, [
+            $this->queue
+        ]);
+
+        $consumerService->run(true);
+        $consumerService->run(true);
+
+        $this->assertEquals('my other message', $this->msgReceived->getBody());
+        $this->assertEquals('my other message', $this->deadLetterMsgReceived->getBody());
+    }
+
 }
