@@ -283,7 +283,7 @@ class Exchange implements RabbitMqObjectInterface
                                             $this->type,
                                             $this->passive,
                                             $this->durable,
-                                            $this->auto_delete,
+                                            $this->autoDelete,
                                             $this->internal,
                                             $this->nowait,
                                             $this->arguments,

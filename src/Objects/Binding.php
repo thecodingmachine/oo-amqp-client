@@ -67,8 +67,8 @@ class Binding implements RabbitMqObjectInterface
     public function init(AMQPChannel $amqpChannel)
     {
         if (!$this->init) {
-            $this->source->init();
-            $this->to->init();
+            $this->source->init($amqpChannel);
+            $this->to->init($amqpChannel);
 
             $amqpChannel->queue_bind($this->to->getName(),
                                         $this->source->getName(),

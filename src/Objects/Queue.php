@@ -6,7 +6,6 @@ use Mouf\AmqpClient\Client;
 use Mouf\AmqpClient\RabbitMqObjectInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
 use Mouf\AmqpClient\ConsumerInterface;
-use Mouf\AmqpClient\Client;
 
 /**
  * @author Marc
@@ -499,8 +498,9 @@ class Queue implements RabbitMqObjectInterface
     public function init(AMQPChannel $amqpChannel)
     {
         if (!$this->init) {
-            $this->source->init($amqpChannel);
-            $this->deadLetterQueue->init($amqpChannel);
+            if ($this->deadLetterQueue) {
+                $this->deadLetterQueue->init($amqpChannel);
+            }
 
             $parameters = [];
             if ($this->alternateExchange !== null) {
