@@ -4,12 +4,19 @@ namespace Mouf\AmqpClient\Objects;
 
 use Mouf\AmqpClient\RabbitMqObjectInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
+use Mouf\AmqpClient\ConsumerInterface;
+use Mouf\AmqpClient\Client;
 
 /**
  * @author Marc
  */
 class Queue implements RabbitMqObjectInterface
 {
+    /**
+     * @var Client
+     */
+    private $client;
+
     /**
      * @var Binding
      */
@@ -128,15 +135,25 @@ class Queue implements RabbitMqObjectInterface
     private $init = false;
 
     /**
+     * Consumer list implement ConsumerInterface.
+     *
+     * @var array|null
+     */
+    private $consumers;
+
+    /**
      * Set the source (Binding).
      *
-     * @param Binding $source
-     * @param string  $name
+     * @param Binding             $source
+     * @param string              $name
+     * @param ConsumerInterface[] $consumers
      */
-    public function __contruct(Binding $source, $name)
+    public function __contruct(Client $client, Binding $source, $name, array $consumers = [])
     {
+        $this->client = $client;
         $this->source = $source;
         $this->name = $name;
+        $this->consumers = $consumers;
     }
 
     /**
@@ -522,5 +539,19 @@ class Queue implements RabbitMqObjectInterface
 
     public function consume()
     {
+        $channel = $this->client->getChannel();
+
+        foreach ($this->consumers as $consumer) {
+            /* @var $consumer ConsumerInterface */
+            $channel->basic_consume($this->name,
+                                    $consumer->getConsumerTag(),
+                                    $consumer->getNoLocal(),
+                                    $consumer->getNoAck(),
+                                    $consumer->getExclusive(),
+                                    $consumer->getNoWait(),
+                                    $consumer->callback(),
+                                    $consumer->getTicket(),
+                                    $consumer->getArguments());
+        }
     }
 }

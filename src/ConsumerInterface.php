@@ -4,5 +4,57 @@ namespace Mouf\AmqpClient;
 
 interface ConsumerInterface
 {
-    public function onMessage();
+    
+    /**
+     * Consumer tag to listen message
+     * By default you can set it to ''
+     */
+    public function getConsumerTag();
+    
+    /**
+     * No local to listen message
+     * By default you can set it to false
+     */
+    public function getNoLocal();
+    
+    /**
+     * No ack to listen message. RabbitMq remove the message only if an ack is send
+     * By default you can set it to false
+     */
+    public function getNoAck();
+    
+    /**
+     * Exclusive to listen message
+     * By default you can set it to false
+     */
+    public function getExclusive();
+    
+    /**
+     * No wait to listen message
+     * By default you can set it to false
+     */
+    public function getNoWait();
+    
+	/**
+	 * Callback for the consume service call if a mesage is receive
+	 */
+    public function callback();
+    
+    /**
+     * Ticket to listen message
+     * By default you can set it to null
+     */
+    public function getNoWait();
+    
+    /**
+     * Argument to listen message
+     * By default you can set it to []
+     */
+    public function getArguments();
+    
+    /**
+     * Argument to listen message
+     * By default you can set it to []
+     */
+    public function getTicket();
 }
