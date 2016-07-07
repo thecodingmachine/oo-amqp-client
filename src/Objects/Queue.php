@@ -9,7 +9,7 @@ use PhpAmqpLib\Channel\AMQPChannel;
  * @author Marc
  *
  */
-class Queue implements RabbitMqObjectInterface{
+class Queue implements RabbitMqObjectInterface {
 
     /**
      *
