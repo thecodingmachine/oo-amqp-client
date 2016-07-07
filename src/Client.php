@@ -158,12 +158,12 @@ class Client
         $this->rabbitMqObjects = $rabbitMqObjects;
     }
 
-	public function register(RabbitMqObjectInterface $object)
-	{
-		if (!in_array($object, $this->rabbitMqObjects, true)) {
-			$this->rabbitMqObjects[] = $object;
-		}
-	}
+    public function register(RabbitMqObjectInterface $object)
+    {
+        if (!in_array($object, $this->rabbitMqObjects, true)) {
+            $this->rabbitMqObjects[] = $object;
+        }
+    }
 
     /**
      * Connection to the RabbitMq service with AMQPStreamConnection.

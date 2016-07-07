@@ -5,7 +5,6 @@ namespace Mouf\AmqpClient\Objects;
 use Mouf\AmqpClient\Client;
 use Mouf\AmqpClient\RabbitMqObjectInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Message\AMQPMessage;
 
 class Exchange implements RabbitMqObjectInterface
 {
@@ -88,13 +87,13 @@ class Exchange implements RabbitMqObjectInterface
      * Set the to (Binding).
      *
      * @param Client $to
-     * @param string  $name
-     * @param string  $type direct, topic, headers or fanout
+     * @param string $name
+     * @param string $type direct, topic, headers or fanout
      */
     public function __construct(Client $client, $name, $type)
     {
         $this->client = $client;
-		$this->client->register($this);
+        $this->client->register($this);
         $this->name = $name;
         $this->type = $type;
     }
