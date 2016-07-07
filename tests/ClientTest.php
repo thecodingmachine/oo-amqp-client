@@ -3,9 +3,14 @@
 namespace Mouf\AmqpClient\Objects;
 
 use Mouf\AmqpClient\Client;
+use Mouf\AmqpClient\Consumer;
+use Mouf\AmqpClient\ConsumerService;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Client
+     */
     private $client;
     private $exchange;
     private $queue;
@@ -21,7 +26,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->client->setPrefetchCount(1);
 
         $this->exchange = new Exchange($this->client, 'test_exchange', 'fanout');
-        $this->queue = new Queue($this->client, 'test_queue');
+        $this->queue = new Queue($this->client, 'test_queue', [
+            new Consumer(function($msg) {
+                var_dump($msg);
+            })
+        ]);
         $this->queue->setDurable(true);
 
         $binding = new Binding($this->exchange, $this->queue);
@@ -40,6 +49,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testQueue()
     {
+        $consumerService = new ConsumerService($this->client, [
+            $this->queue
+        ]);
 
+        $consumerService->run();
     }
 }

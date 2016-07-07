@@ -143,7 +143,7 @@ class Queue implements RabbitMqObjectInterface
      * @param string              $name
      * @param ConsumerInterface[] $consumers
      */
-    public function __contruct(Client $client, $name, array $consumers = [])
+    public function __construct(Client $client, $name, array $consumers = [])
     {
         $this->client = $client;
         $this->client->register($this);
@@ -541,11 +541,13 @@ class Queue implements RabbitMqObjectInterface
             /* @var $consumer ConsumerInterface */
             $channel->basic_consume($this->name,
                                     $consumer->getConsumerTag(),
-                                    $consumer->getNoLocal(),
-                                    $consumer->getNoAck(),
-                                    $consumer->getExclusive(),
-                                    $consumer->getNoWait(),
-                                    $consumer->callback(),
+                                    $consumer->isNoLocal(),
+                                    $consumer->isNoAck(),
+                                    $consumer->isExclusive(),
+                                    $consumer->isNoWait(),
+                                    function($msg) use ($consumer) {
+                                        $consumer->callback($msg);
+                                    },
                                     $consumer->getTicket(),
                                     $consumer->getArguments());
         }
