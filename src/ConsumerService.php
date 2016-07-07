@@ -33,7 +33,7 @@ class ConsumerService
     /**
      * Call this function in your script to consume the RabbitMq queue.
      */
-    public function run()
+    public function run($onlyOne = false)
     {
         foreach ($this->queues as $queue) {
             /* @var Queue $queue */
@@ -41,9 +41,14 @@ class ConsumerService
         }
 
         $channel = $this->client->getChannel();
-
-        while (count($channel->callbacks)) {
-            $channel->wait();
+        if ($onlyOne) {
+            if (count($channel->callbacks)) {
+                $channel->wait();
+            }
+        } else {
+            while (count($channel->callbacks)) {
+                $channel->wait();
+            }
         }
     }
 }

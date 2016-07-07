@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Mouf\AmqpClient;
-
 
 class Consumer implements ConsumerInterface
 {
@@ -48,6 +46,7 @@ class Consumer implements ConsumerInterface
 
     /**
      * Consumer constructor.
+     *
      * @param callable $callback
      */
     public function __construct(callable $callback)
@@ -61,6 +60,7 @@ class Consumer implements ConsumerInterface
     public function callback($msg)
     {
         $callback = $this->callback;
+
         return $callback($msg);
     }
 
@@ -89,7 +89,7 @@ class Consumer implements ConsumerInterface
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isNoLocal()
     {
@@ -97,7 +97,7 @@ class Consumer implements ConsumerInterface
     }
 
     /**
-     * @param boolean $noLocal
+     * @param bool $noLocal
      */
     public function setNoLocal($noLocal)
     {
@@ -105,7 +105,7 @@ class Consumer implements ConsumerInterface
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isNoAck()
     {
@@ -113,7 +113,7 @@ class Consumer implements ConsumerInterface
     }
 
     /**
-     * @param boolean $noAck
+     * @param bool $noAck
      */
     public function setNoAck($noAck)
     {
@@ -121,7 +121,7 @@ class Consumer implements ConsumerInterface
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isExclusive()
     {
@@ -129,7 +129,7 @@ class Consumer implements ConsumerInterface
     }
 
     /**
-     * @param boolean $exclusive
+     * @param bool $exclusive
      */
     public function setExclusive($exclusive)
     {
@@ -137,7 +137,7 @@ class Consumer implements ConsumerInterface
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isNoWait()
     {
@@ -145,7 +145,7 @@ class Consumer implements ConsumerInterface
     }
 
     /**
-     * @param boolean $noWait
+     * @param bool $noWait
      */
     public function setNoWait($noWait)
     {
@@ -183,6 +183,4 @@ class Consumer implements ConsumerInterface
     {
         $this->ticket = $ticket;
     }
-
-
 }

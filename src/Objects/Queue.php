@@ -545,7 +545,7 @@ class Queue implements RabbitMqObjectInterface
                                     $consumer->isNoAck(),
                                     $consumer->isExclusive(),
                                     $consumer->isNoWait(),
-                                    function($msg) use ($consumer) {
+                                    function ($msg) use ($consumer) {
                                         $consumer->callback($msg);
                                     },
                                     $consumer->getTicket(),

@@ -4,7 +4,6 @@ namespace Mouf\AmqpClient;
 
 interface ConsumerInterface
 {
-
     /**
      * Callback for the consume service call if a mesage is receive.
      */
@@ -47,8 +46,7 @@ interface ConsumerInterface
     public function getArguments();
 
     /**
-     * Ticket to listen message
-     *
+     * Ticket to listen message.
      */
     public function getTicket();
 }
