@@ -24,7 +24,186 @@ composer require mouf/oo-amqp-lib
 Usage
 =====
 
-TODO
+Before using this library, you should be accustomed to the AMQP concepts. If you are not, we strongly advise you to start reading the ["AMQP 0-9-1 Model Explained" document from the RabbitMQ documentation](https://www.rabbitmq.com/tutorials/amqp-concepts.html).
+
+Done? Let's get started.
+
+Creating a client
+-----------------
+
+The first thing you want to create is a `Client` object. A `Client` represents a connection to RabbitMQ (for those of you used to php-amqplib, it is both a connection AND a channel).
+
+```php
+use Mouf\AmqpClient\Client;
+
+$client = new Client($rabbitmq_host, $rabbitmq_port, $rabbitmq_user, $rabbitmq_password);
+```
+
+Note: the `Client` class exposes a number of useful configuration methods (you do not need to use those if you don't know what they do):
+
+```php
+public function setPrefetchSize($prefetchSize);
+public function setPrefetchCount($prefetchCount);
+public function setAGlobal($aGlobal);
+```
+
+Creating an exchange
+--------------------
+
+In AMQP, *exchanges* are the objects that receive messages and are in charge of forwarding those messages to queues.
+You must therefore define an `Exchange` objects to send messages.
+
+```php
+use Mouf\AmqpClient\Objects\Exchange;
+
+$exchange = new Exchange($client, 'exchange_name', 'fanout');
+```
+
+When creating an exchange, you pass to the constructor the `Client` object, the exchange name, and the exchange type.
+
+Note: the exchange will *self-register* in the client.
+
+You can apply advanced configuration using configuration methods:
+
+```php
+public function setPassive($passive);
+public function setDurable($durable);
+public function setAutoDelete($autoDelete);
+public function setInternal($internal);
+public function setNowait($nowait);
+public function setArguments($arguments);
+public function setTicket($ticket);
+```
+
+Creating a queue and a binding
+------------------------------
+
+Messages arriving to an exchange are forwarded to a *queue* through a *binding*.
+
+We will now create a queue to store our messages.
+
+```php
+use Mouf\AmqpClient\Objects\Queue;
+
+$queue = new Queue($client, 'queue_name', [
+    new Consumer(function(AMQPMessage $msg) {
+        // Do some stuff with the received message
+    })
+]);
+```
+
+When creating a client, you pass to the constructor the `Client` object, the client name, and an array of `Consumer` objects (actually an array of objects implementing the `ConsumerInterface`).
+
+A `Consumer` object is an object that contains code that will be called each time a message is received.
+
+Note: the queue will *self-register* in the client.
+
+You can apply advanced configuration to your queue using those configuration methods:
+
+```php
+public function setPassive($passive);
+public function setDurable($durable);
+public function setExclusive($exclusive);
+public function setAutoDelete($autoDelete);
+public function setNoWait($noWait);
+public function setArguments($arguments);
+public function setTicket($ticket);
+public function setDeadLetterExchange(Exchange $exchange);
+public function setConfirm($confirm);
+public function setConsumerCancelNotify(Queue $consumerCancelNotify);
+public function setAlternateExchange(Queue $alternateExchange);
+public function setTtl($ttl);
+public function setMaxLength($maxLength);
+public function setMaxPriority($maxPriority);
+```
+
+You will certainly want to use the `setDurable` method if you want your queue to store messages in case of outage of the receiver.
+
+At this point, we have an *exchange*, we have a *queue*, but both are not linked together. We need to **bind** those, using a `Binding` object.
+
+```php
+use Mouf\AmqpClient\Objects\Binding;
+
+$binding = new Binding($exchange, $queue);
+$client->register($binding);
+```
+
+A `Binding` links an exchange to a queue.
+
+**Important**: unlike the `Exchange` and the `Queue`, a `Binding` does not self-register in the client. You have to declare it in the client yourself, using the `Client::register` method.
+
+Done? Let's send and receive messages!
+
+Sending a message
+-----------------
+
+In order to send a message, you simply use the `Exchange::publish` method:
+
+```php
+$exchange->publish(new Message('your message body', 'message_key');
+// ... and that's it!
+```
+
+You may still want to configure a bit more the sending of your message. The `Exchange::publish` method accepts a number of optional arguments:
+
+```php
+public function publish(Message $message, 
+                        string $routingKey, 
+                        bool $mandatory = false,
+                        bool $immediate = false,
+                        $ticket = null);
+```
+
+Also, the `Message` class can be tweaked with one of those methods:
+
+```php
+public function setContentType(string $content_type);
+public function setContentEncoding(string $content_encoding);
+public function setApplicationHeaders(array $application_headers);
+public function setDeliveryMode(int $delivery_mode);
+public function setPriority(int $priority);
+public function setCorrelationId(string $correlation_id);
+public function setReplyTo(string $reply_to);
+public function setExpiration(string $expiration);
+public function setMessageId(string $message_id);
+public function setTimestamp(\DateTimeInterface $timestamp);
+public function setType(string $type);
+public function setUserId(string $user_id);
+public function setAppId(string $app_id);
+public function setClusterId(string $cluster_id);
+```
+
+Receiving messages
+------------------
+
+As we already saw, the first step to receiving message is creating a queue and adding `Consumer` objects to that queue.
+
+We still need to tell PHP to start listening, otherwise, the callbacks in the `Consumer` will never be called.
+
+This can be done using the `ConsumerService` class.
+
+```php
+$consumerService = new ConsumerService($client, [
+    $queue
+]);
+
+$consumerService->run();
+```
+
+The `ConsumerService` constructor takes the client in parameter, and the array of queues that must be listened to.
+
+The `ConsumerService::run` method will start listening on arriving messages, in an infinite loop.
+
+Notice that you can use `$consumerService->run(true);` if you want to listen to one message only and return afterward.
+
+Acknowledgements and error handling
+-----------------------------------
+
+When you receive a message, an acknowledgement will not be sent before the `Consumer` has finished consuming the message.
+
+If an exception is triggered in the `Consumer`, a `nack` will be sent instead to RabbitMQ.
+
+Note: if your consumer callback throws an exception implementing the `RetryableExceptionInterface` interface, the `nack` message will be sent with the "requeue" flag. The message will be requeued.
 
 
 Running the unit tests

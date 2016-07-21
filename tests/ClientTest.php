@@ -105,7 +105,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->triggerException = true;
 
         $consumerService = new ConsumerService($this->client, [
-            $this->queue
+            $this->queue,
+            $this->deadLetterQueue
         ]);
 
         $consumerService->run(true);

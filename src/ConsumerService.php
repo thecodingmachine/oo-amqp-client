@@ -50,5 +50,11 @@ class ConsumerService
                 $channel->wait();
             }
         }
+
+        foreach ($this->queues as $queue) {
+            /* @var Queue $queue */
+            $queue->cancelConsume();
+        }
+
     }
 }
