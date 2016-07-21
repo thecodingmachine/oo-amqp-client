@@ -126,7 +126,7 @@ class Queue implements RabbitMqObjectInterface
     /**
      * Consumer list implement ConsumerInterface.
      *
-     * @var array|null
+     * @var array
      */
     private $consumers;
 
@@ -527,6 +527,9 @@ class Queue implements RabbitMqObjectInterface
         }
     }
 
+    /**
+     * Sends to RabbitMQ the order to subscribe to the consumers.
+     */
     public function consume()
     {
         $channel = $this->client->getChannel();
@@ -544,6 +547,21 @@ class Queue implements RabbitMqObjectInterface
                                     },
                                     $consumer->getTicket(),
                                     $consumer->getArguments());
+        }
+
+    }
+
+    /**
+     * Unsubscribes consumers
+     */
+    public function cancelConsume()
+    {
+        $channel = $this->client->getChannel();
+
+        foreach ($this->consumers as $consumer) {
+            /* @var $consumer ConsumerInterface */
+            $channel->basic_cancel($consumer->getConsumerTag(),
+                $consumer->isNoWait());
         }
     }
 }
