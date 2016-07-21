@@ -126,7 +126,7 @@ class Queue implements RabbitMqObjectInterface
     /**
      * Consumer list implement ConsumerInterface.
      *
-     * @var array|null
+     * @var array
      */
     private $consumers;
 
