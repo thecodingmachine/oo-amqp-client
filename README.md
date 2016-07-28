@@ -18,7 +18,7 @@ Installation
 ============
 
 ```
-composer require mouf/oo-amqp-lib
+composer require mouf/oo-amqp-client
 ```
 
 Usage
