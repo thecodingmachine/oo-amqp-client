@@ -454,7 +454,7 @@ class Queue implements RabbitMqObjectInterface
     /**
      * Set RabbitMq specific parameter : max length.
      *
-     * @param int $ttl
+     * @param int $maxLength
      *
      * @return Queue
      */
