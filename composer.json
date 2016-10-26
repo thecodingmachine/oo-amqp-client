@@ -1,6 +1,6 @@
 {
 	"name" : "mouf/oo-amqp-client",
-	"description" : "A PHP hydrator allowing easy mapping between an array and an object.",
+	"description" : "An object oriented wrapper on top of php-amqplib helping work with RabbitMQ in a more object oriented way.",
 	"keywords" : [
 		"tdbm",
 		"hydrator"
