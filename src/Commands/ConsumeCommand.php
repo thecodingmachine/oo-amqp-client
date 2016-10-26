@@ -2,9 +2,7 @@
 
 namespace Mouf\AmqpClient\Commands;
 
-use Mouf\AmqpClient\Client;
 use Mouf\AmqpClient\ConsumerService;
-use Mouf\AmqpClient\Objects\Queue;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -12,7 +10,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ConsumeCommand extends Command
 {
-
     /**
      * @var ConsumerService
      */
@@ -21,7 +18,7 @@ class ConsumeCommand extends Command
     /**
      * ConsumeCommand constructor.
      */
-    public function __construct(ConsumerService $consumerService, $commandName = "amqp:consume", $description = null)
+    public function __construct(ConsumerService $consumerService, $commandName = 'amqp:consume', $description = null)
     {
         parent::__construct($commandName);
         $this->setDescription($description ?: 'Listen to messages from the AMQP bus (RabbitMQ)');
@@ -44,5 +41,4 @@ class ConsumeCommand extends Command
     {
         $this->consumerService->run($input->getOption('onlyone'));
     }
-
 }

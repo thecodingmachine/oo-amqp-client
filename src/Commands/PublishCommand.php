@@ -25,7 +25,6 @@ class PublishCommand extends Command
         parent::__construct();
     }
 
-
     /**
      * {@inheritdoc}
      */
@@ -49,13 +48,13 @@ class PublishCommand extends Command
         $filename = $input->getArgument('filename');
         if ($filename = $input->getArgument('filename')) {
             $contents = file_get_contents($filename);
-        } else if (0 === ftell(STDIN)) {
+        } elseif (0 === ftell(STDIN)) {
             $contents = '';
             while (!feof(STDIN)) {
                 $contents .= fread(STDIN, 1024);
             }
         } else {
-            throw new \RuntimeException("Please provide a filename or pipe message to STDIN.");
+            throw new \RuntimeException('Please provide a filename or pipe message to STDIN.');
         }
 
         $routingKey = 'key';
@@ -65,5 +64,4 @@ class PublishCommand extends Command
 
         $channel->basic_publish((new Message($contents))->toAMQPMessage(), $input->getArgument('exchange'), $routingKey, $mandatory, $immediate, $ticket);
     }
-
 }
