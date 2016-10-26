@@ -1,10 +1,9 @@
 <?php
 
-
 namespace Mouf\AmqpClient;
 
 /**
- * AMQP Queues
+ * AMQP Queues.
  */
 interface QueueInterface extends RabbitMqObjectInterface
 {
@@ -14,7 +13,7 @@ interface QueueInterface extends RabbitMqObjectInterface
     public function consume();
 
     /**
-     * Unsubscribes consumers
+     * Unsubscribes consumers.
      */
     public function cancelConsume();
 }

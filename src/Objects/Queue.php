@@ -549,11 +549,10 @@ class Queue implements RabbitMqObjectInterface, QueueInterface
                                     $consumer->getTicket(),
                                     $consumer->getArguments());
         }
-
     }
 
     /**
-     * Unsubscribes consumers
+     * Unsubscribes consumers.
      */
     public function cancelConsume()
     {

@@ -206,6 +206,15 @@ If an exception is triggered in the `Consumer`, a `nack` will be sent instead to
 Note: if your consumer callback throws an exception implementing the `RetryableExceptionInterface` interface, the `nack` message will be sent with the "requeue" flag. The message will be requeued.
 
 
+Symfony console integration
+---------------------------
+
+This package comes with 2 Symfony commands that you can use to send and receive messages.
+
+- `Mouf\AmqpClient\Commands\PublishCommand` (`amqp:publish`) allows you to send an arbitrary message on an exchange (read from a file or from STDIN)
+- `Mouf\AmqpClient\Commands\ConsumeCommand` (`amqp:consume`) listen to all configured queues
+
+
 Running the unit tests
 ======================
 
