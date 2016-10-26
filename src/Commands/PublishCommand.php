@@ -7,6 +7,7 @@ use Mouf\AmqpClient\Objects\Message;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class PublishCommand extends Command
@@ -35,7 +36,11 @@ class PublishCommand extends Command
             ->setDescription('Send a message on a AMQP (RabbitMQ) bus.')
             ->setHelp('Reads a message from STDIN and sends it on the bus to the given exchange.')
             ->addArgument('exchange', InputArgument::REQUIRED, 'the target exchange')
-            ->addArgument('filename', InputArgument::OPTIONAL, 'the file to send on the bus (if not passed, data is read from STDIN)');
+            ->addArgument('filename', InputArgument::OPTIONAL, 'the file to send on the bus (if not passed, data is read from STDIN)')
+            ->addOption('routing_key', 'k', InputOption::VALUE_REQUIRED, 'the routing key of the message', 'key')
+            ->addOption('mandatory', 'm', InputOption::VALUE_NONE, 'set the mandatory bit on the AMQP message')
+            ->addOption('immediate', 'i', InputOption::VALUE_NONE, 'set the immediate bit on the AMQP message')
+            ->addOption('ticket', 't', InputOption::VALUE_REQUIRED, 'set the ticket number');
     }
 
     /**
@@ -57,10 +62,10 @@ class PublishCommand extends Command
             throw new \RuntimeException('Please provide a filename or pipe message to STDIN.');
         }
 
-        $routingKey = 'key';
-        $mandatory = false;
-        $immediate = false;
-        $ticket = null;
+        $routingKey = $input->getOption('routing_key');
+        $mandatory = $input->getOption('mandatory');
+        $immediate = $input->getOption('immediate');
+        $ticket = $input->getOption('ticket');
 
         $channel->basic_publish((new Message($contents))->toAMQPMessage(), $input->getArgument('exchange'), $routingKey, $mandatory, $immediate, $ticket);
     }
