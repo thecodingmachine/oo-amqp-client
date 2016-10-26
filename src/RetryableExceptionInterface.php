@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Mouf\AmqpClient;
 
 /**
@@ -8,5 +7,4 @@ namespace Mouf\AmqpClient;
  */
 interface RetryableExceptionInterface
 {
-
 }

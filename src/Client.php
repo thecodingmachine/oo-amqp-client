@@ -96,7 +96,7 @@ class Client
     /**
      * Set prefetch size
      * It's for QOS prefetch-size http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.qos.
-     * 
+     *
      * @param int $prefetchSize
      */
     public function setPrefetchSize($prefetchSize)
@@ -117,7 +117,7 @@ class Client
     /**
      * Set prefetch size
      * It's for QOS prefetch-size http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.qos.
-     * 
+     *
      * @param int $prefetchCount
      */
     public function setPrefetchCount($prefetchCount)
@@ -138,7 +138,7 @@ class Client
     /**
      * Set global
      * It's for QOS prefetch-size http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.qos.
-     * 
+     *
      * @param int $aGlobal
      */
     public function setAGlobal($aGlobal)
@@ -194,8 +194,9 @@ class Client
      *
      * @return QueueInterface[]
      */
-    public function getQueues() {
-        return array_filter($this->rabbitMqObjects, function(RabbitMqObjectInterface $object) {
+    public function getQueues()
+    {
+        return array_filter($this->rabbitMqObjects, function (RabbitMqObjectInterface $object) {
             return $object instanceof QueueInterface;
         });
     }

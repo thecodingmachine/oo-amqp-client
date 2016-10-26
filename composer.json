@@ -21,8 +21,12 @@
     "require-dev" : {
 	    "phpunit/phpunit": "^5.4.6",
 	    "satooshi/php-coveralls": "~1.0",
-		"fabpot/php-cs-fixer": "^1.9.3"
+		"fabpot/php-cs-fixer": "^1.9.3",
+		"symfony/console": "^3.0"
     },
+	"suggest": {
+		"symfony/console": "To use the 'amqp:publish' CLI command."
+	},
 	"autoload" : {
 		"psr-4" : {
 			"Mouf\\AmqpClient\\" : "src/"

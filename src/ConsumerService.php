@@ -6,7 +6,7 @@ use Mouf\AmqpClient\Objects\Queue;
 
 /**
  * Function to consume RabbitMq queue.
- * 
+ *
  * @author Marc Teyssier
  */
 class ConsumerService
@@ -22,8 +22,8 @@ class ConsumerService
     private $queues;
 
     /**
-     * @param Client $client
-     * @param Queue[] $queues List of queue to listen. If empty, all queues from the client will be listened.
+     * @param Client  $client
+     * @param Queue[] $queues List of queue to listen. If empty, all queues from the client will be listened
      */
     public function __construct(Client $client, array $queues = [])
     {
@@ -62,6 +62,5 @@ class ConsumerService
             /* @var Queue $queue */
             $queue->cancelConsume();
         }
-
     }
 }
