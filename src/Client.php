@@ -188,4 +188,15 @@ class Client
 
         return $this->channel;
     }
+
+    /**
+     * Returns the list of registered queues.
+     *
+     * @return QueueInterface[]
+     */
+    public function getQueues() {
+        return array_filter($this->rabbitMqObjects, function(RabbitMqObjectInterface $object) {
+            return $object instanceof QueueInterface;
+        });
+    }
 }

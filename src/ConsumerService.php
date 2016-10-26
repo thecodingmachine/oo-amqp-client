@@ -22,9 +22,10 @@ class ConsumerService
     private $queues;
 
     /**
-     * @param Queue[] $queues List of queue to listen
+     * @param Client $client
+     * @param Queue[] $queues List of queue to listen. If empty, all queues from the client will be listened.
      */
-    public function __construct(Client $client, $queues)
+    public function __construct(Client $client, array $queues = [])
     {
         $this->client = $client;
         $this->queues = $queues;
@@ -35,7 +36,13 @@ class ConsumerService
      */
     public function run($nonBlocking = false)
     {
-        foreach ($this->queues as $queue) {
+        if (empty($this->queues)) {
+            $queues = $this->client->getQueues();
+        } else {
+            $queues = $this->queues;
+        }
+
+        foreach ($queues as $queue) {
             /* @var Queue $queue */
             $queue->consume();
         }
@@ -51,7 +58,7 @@ class ConsumerService
             }
         }
 
-        foreach ($this->queues as $queue) {
+        foreach ($queues as $queue) {
             /* @var Queue $queue */
             $queue->cancelConsume();
         }

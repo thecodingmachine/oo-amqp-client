@@ -3,6 +3,7 @@
 namespace Mouf\AmqpClient\Objects;
 
 use Mouf\AmqpClient\Client;
+use Mouf\AmqpClient\QueueInterface;
 use Mouf\AmqpClient\RabbitMqObjectInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
 use Mouf\AmqpClient\ConsumerInterface;
@@ -11,7 +12,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 /**
  * @author Marc
  */
-class Queue implements RabbitMqObjectInterface
+class Queue implements RabbitMqObjectInterface, QueueInterface
 {
     /**
      * @var Client
