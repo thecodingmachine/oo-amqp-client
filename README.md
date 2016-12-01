@@ -140,7 +140,7 @@ Sending a message
 In order to send a message, you simply use the `Exchange::publish` method:
 
 ```php
-$exchange->publish(new Message('your message body', 'message_key'));
+$exchange->publish(new Message('your message body'), 'message_key');
 // ... and that's it!
 ```
 
