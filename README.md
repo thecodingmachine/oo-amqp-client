@@ -140,15 +140,15 @@ Sending a message
 In order to send a message, you simply use the `Exchange::publish` method:
 
 ```php
-$exchange->publish(new Message('your message body', 'message_key');
+$exchange->publish(new Message('your message body', 'message_key'));
 // ... and that's it!
 ```
 
 You may still want to configure a bit more the sending of your message. The `Exchange::publish` method accepts a number of optional arguments:
 
 ```php
-public function publish(Message $message, 
-                        string $routingKey, 
+public function publish(Message $message,
+                        string $routingKey,
                         bool $mandatory = false,
                         bool $immediate = false,
                         $ticket = null);
