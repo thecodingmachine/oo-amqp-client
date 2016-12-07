@@ -564,4 +564,23 @@ class Queue implements RabbitMqObjectInterface, QueueInterface
                 $consumer->isNoWait());
         }
     }
+
+    /**
+     * Sends a message directly to this queue (skipping any exchange).
+     *
+     * This is a RabbitMQ only feature. Behind the scene, it will dispatch the message to the default RabbitMQ exchange.
+     *
+     * @param Message $message
+     * @param bool $mandatory
+     * @param bool $immediate
+     * @param null $ticket
+     */
+    public function publish(Message $message, $mandatory = false,
+                            $immediate = false,
+                            $ticket = null)
+    {
+        $channel = $this->client->getChannel();
+
+        $channel->basic_publish($message->toAMQPMessage(), '', $this->name, $mandatory, $immediate, $ticket);
+    }
 }

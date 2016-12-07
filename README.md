@@ -2,9 +2,9 @@
 [![Total Downloads](https://poser.pugx.org/mouf/oo-amqp-client/downloads)](https://packagist.org/packages/mouf/oo-amqp-client)
 [![Latest Unstable Version](https://poser.pugx.org/mouf/oo-amqp-client/v/unstable)](https://packagist.org/packages/mouf/oo-amqp-client)
 [![License](https://poser.pugx.org/mouf/oo-amqp-client/license)](https://packagist.org/packages/mouf/oo-amqp-client)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thecodingmachine/oo-amqp-client/badges/quality-score.png?b=1.0)](https://scrutinizer-ci.com/g/thecodingmachine/oo-amqp-client/?branch=1.0)
-[![Build Status](https://travis-ci.org/thecodingmachine/oo-amqp-client.svg?branch=1.0)](https://travis-ci.org/thecodingmachine/oo-amqp-client)
-[![Coverage Status](https://coveralls.io/repos/thecodingmachine/oo-amqp-client/badge.svg?branch=1.0&service=github)](https://coveralls.io/github/thecodingmachine/oo-amqp-client?branch=1.0)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thecodingmachine/oo-amqp-client/badges/quality-score.png?b=1.1)](https://scrutinizer-ci.com/g/thecodingmachine/oo-amqp-client/?branch=1.1)
+[![Build Status](https://travis-ci.org/thecodingmachine/oo-amqp-client.svg?branch=1.1)](https://travis-ci.org/thecodingmachine/oo-amqp-client)
+[![Coverage Status](https://coveralls.io/repos/thecodingmachine/oo-amqp-client/badge.svg?branch=1.1&service=github)](https://coveralls.io/github/thecodingmachine/oo-amqp-client?branch=1.1)
 
 About Object Oriented AMQP Client
 =================================
@@ -204,6 +204,40 @@ When you receive a message, an acknowledgement will not be sent before the `Cons
 If an exception is triggered in the `Consumer`, a `nack` will be sent instead to RabbitMQ.
 
 Note: if your consumer callback throws an exception implementing the `RetryableExceptionInterface` interface, the `nack` message will be sent with the "requeue" flag. The message will be requeued.
+
+Sending a message to a given queue
+----------------------------------
+
+If you want to target a special queue and send a message to it directly, you have 2 options.
+
+**Option 1**: create a `DefaultExchange` object and pass the queue name as the key of the message.
+
+```php
+use Mouf\AmqpClient\Objects\DefaultExchange;
+
+$exchange = new DefaultExchange($client);
+// Simply pass the queue name as the second parameter of "publish".
+// Note: you do not need to bind the queue to the exchange. RabbitMQ does this automatically.
+$exchange->publish(new Message('your message body'), 'name_of_the_target_queue');
+// ... and that's it!
+```
+
+**Option 2**: use the `publish` method of the `Queue` object:
+
+```php
+use Mouf\AmqpClient\Objects\Queue;
+
+$queue = new Queue($client, 'queue_name', [
+    new Consumer(function(AMQPMessage $msg) {
+        // Do some stuff with the received message
+    })
+]);
+
+// Shazam! We are directly sending a message to the queue. No exchange needed!
+$queue->publish(new Message('your message body'));
+```
+
+Note: these are RabbitMQ specific features and might not work with other AMQP buses.
 
 
 Symfony console integration

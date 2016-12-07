@@ -6,6 +6,10 @@ use Mouf\AmqpClient\Client;
 use Mouf\AmqpClient\RabbitMqObjectInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
 
+/**
+ * Represents an "exchange" object in AMQP protocol.
+ * In AMQP, "messages" are sent to exchanges. Exchanges are meant to dispatch messages to "queues".
+ */
 class Exchange implements RabbitMqObjectInterface
 {
     /**
@@ -94,6 +98,9 @@ class Exchange implements RabbitMqObjectInterface
     {
         $this->client = $client;
         $this->client->register($this);
+        if ($name === '' && !$this instanceof DefaultExchange) {
+            throw new \InvalidArgumentException('An exchange cannot have an empty name. If you want to target the RabbitMQ default exchange, please use the DefaultExchange class instead.');
+        }
         $this->name = $name;
         $this->type = $type;
     }

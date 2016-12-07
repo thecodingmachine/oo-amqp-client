@@ -30,16 +30,21 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     private $deadLetterMsgReceived;
     private $triggerException = false;
 
-    protected function init()
+    private function makeClient()
     {
         global $rabbitmq_host;
         global $rabbitmq_port;
         global $rabbitmq_user;
         global $rabbitmq_password;
 
-        $this->client = new Client($rabbitmq_host, $rabbitmq_port, $rabbitmq_user, $rabbitmq_password);
-        $this->client->setPrefetchCount(1);
+        $client = new Client($rabbitmq_host, $rabbitmq_port, $rabbitmq_user, $rabbitmq_password);
+        $client->setPrefetchCount(1);
+        return $client;
+    }
 
+    protected function init()
+    {
+        $this->client = $this->makeClient();
         $this->exchange = new Exchange($this->client, 'test_exchange', 'fanout');
         $this->queue = new Queue($this->client, 'test_queue', [
             new Consumer(function(AMQPMessage $msg) {
@@ -115,4 +120,54 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my other message', $this->deadLetterMsgReceived->getBody());
     }
 
+    public function testExceptionOnExchangeEmptyName()
+    {
+        $client = $this->makeClient();
+        $this->expectException(\InvalidArgumentException::class);
+        new Exchange($client, '', 'direct');
+    }
+
+    public function testDefaultExchange()
+    {
+        $client = $this->makeClient();
+        // Let's send a message on RabbitMQ default exchange (named "")
+        $exchange = new DefaultExchange($client);
+        $queue = new Queue($client, 'test_direct_queue', [
+            new Consumer(function(AMQPMessage $msg) {
+                $this->msgReceived = $msg;
+            })
+        ]);
+
+        // The key is the name of the queue.
+        $exchange->publish(new Message('hello'), 'test_direct_queue');
+
+        $consumerService = new ConsumerService($client, [
+            $queue
+        ]);
+
+        $consumerService->run(true);
+
+        $this->assertEquals('hello', $this->msgReceived->getBody());
+    }
+
+    public function testPublishToQueue()
+    {
+        $client = $this->makeClient();
+        $queue = new Queue($client, 'test_direct_queue', [
+            new Consumer(function(AMQPMessage $msg) {
+                $this->msgReceived = $msg;
+            })
+        ]);
+
+        // The key is the name of the queue.
+        $queue->publish(new Message('hello'));
+
+        $consumerService = new ConsumerService($client, [
+            $queue
+        ]);
+
+        $consumerService->run(true);
+
+        $this->assertEquals('hello', $this->msgReceived->getBody());
+    }
 }
