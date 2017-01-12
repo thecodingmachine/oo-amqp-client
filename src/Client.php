@@ -77,6 +77,20 @@ class Client
      */
     private $rabbitMqObjects = [];
 
+    /**
+    * Maximum connection's retry
+    **/
+    const MAX_RETRY = 10;
+
+    /**
+    * current retry amount
+    **/
+    private static $retry = 0;
+    /**
+    * time in seconds to wait between each retry
+    **/
+    const WAIT_TIME = 30;
+
     public function __construct($host, $port, $user, $password)
     {
         $this->host = $host;
@@ -166,6 +180,24 @@ class Client
     }
 
     /**
+    * Function used to create $this->connection
+    * handle connection's retry in case of the rabbitmq server is not ready yet
+    **/
+    private function createConnection()
+    {
+        try {
+            $this->connection = new AMQPStreamConnection($this->host, $this->port, $this->user, $this->password);
+        } catch (\ErrorException $e) {
+            if (self::$retry >= self::MAX_RETRY) {
+                throw $e;
+            }
+            sleep(self::WAIT_TIME);
+            $this->createConnection();
+            self::$retry++;
+        }
+    }
+
+    /**
      * Connection to the RabbitMq service with AMQPStreamConnection.
      *
      * @return AMQPChannel
@@ -173,8 +205,7 @@ class Client
     public function getChannel()
     {
         if (!$this->connection) {
-            $this->connection = new AMQPStreamConnection($this->host, $this->port, $this->user, $this->password);
-
+            $this->createConnection();
             $this->channel = $this->connection->channel();
 
             if ($this->prefetchSize !== null || $this->prefetchCount !== null || $this->aGlobal !== null) {
