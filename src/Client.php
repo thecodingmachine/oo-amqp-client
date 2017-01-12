@@ -191,9 +191,9 @@ class Client
             if (self::$retry >= self::MAX_RETRY) {
                 throw $e;
             }
+            self::$retry++;
             sleep(self::WAIT_TIME);
             $this->createConnection();
-            self::$retry++;
         }
     }
 
