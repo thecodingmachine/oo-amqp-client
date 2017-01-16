@@ -177,7 +177,13 @@ class Client
             try {
                 $this->connection = new AMQPStreamConnection($this->host, $this->port, $this->user, $this->password);
             } catch (\ErrorException $e) {
-                throw new ConnectionException("Cannot create the connection", 404, $e);
+                /**
+                * We are trying to catch the exception when the connection if refused
+                **/
+              if (preg_match("/.*unable to connect.*Connection refused.*/", $e->__toString())) {
+                  throw new ConnectionException("Cannot create the connection", 404, $e);
+              }
+                throw $e;
             }
             $this->channel = $this->connection->channel();
 
