@@ -4,6 +4,7 @@ namespace Mouf\AmqpClient;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Channel\AMQPChannel;
+use Mouf\AmqpClient\Exception\ConnectionException;
 
 class Client
 {
