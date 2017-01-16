@@ -173,8 +173,11 @@ class Client
     public function getChannel()
     {
         if (!$this->connection) {
-            $this->connection = new AMQPStreamConnection($this->host, $this->port, $this->user, $this->password);
-
+            try {
+                $this->connection = new AMQPStreamConnection($this->host, $this->port, $this->user, $this->password);
+            } catch (\ErrorException $e) {
+                throw new ConnectionException("Cannot create the connection", 404, $e);
+            }
             $this->channel = $this->connection->channel();
 
             if ($this->prefetchSize !== null || $this->prefetchCount !== null || $this->aGlobal !== null) {
