@@ -30,14 +30,19 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     private $deadLetterMsgReceived;
     private $triggerException = false;
 
-    protected function init()
+    protected function init($port = null)
     {
         global $rabbitmq_host;
         global $rabbitmq_port;
         global $rabbitmq_user;
         global $rabbitmq_password;
 
-        $this->client = new Client($rabbitmq_host, $rabbitmq_port, $rabbitmq_user, $rabbitmq_password);
+        if (!$port) {
+          $port = $rabbitmq_port;
+        }
+
+
+        $this->client = new Client($rabbitmq_host, $port, $rabbitmq_user, $rabbitmq_password);
         $this->client->setPrefetchCount(1);
 
         $this->exchange = new Exchange($this->client, 'test_exchange', 'fanout');
@@ -114,5 +119,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my other message', $this->msgReceived->getBody());
         $this->assertEquals('my other message', $this->deadLetterMsgReceived->getBody());
     }
-
+    /**
+     * @expectedException \Mouf\AmqpClient\Exception\ConnectionException
+     */
+    public function testConnectionException()
+    {
+        $this->init(1242000042);
+        $this->client->getChannel();
+    }
 }
