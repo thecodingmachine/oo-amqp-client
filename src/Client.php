@@ -4,6 +4,7 @@ namespace Mouf\AmqpClient;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Channel\AMQPChannel;
+use Mouf\AmqpClient\Exception\ConnectionException;
 
 class Client
 {
@@ -173,8 +174,15 @@ class Client
     public function getChannel()
     {
         if (!$this->connection) {
-            $this->connection = new AMQPStreamConnection($this->host, $this->port, $this->user, $this->password);
-
+            try {
+                $this->connection = new AMQPStreamConnection($this->host, $this->port, $this->user, $this->password);
+            } catch (\ErrorException $e) {
+                /* We are trying to catch the exception when the connection if refused */
+                if (preg_match("/.*unable to connect.*Connection refused.*/", $e->__toString())) {
+                    throw new ConnectionException("Cannot create the connection", 404, $e);
+                }
+                throw $e;
+            }
             $this->channel = $this->connection->channel();
 
             if ($this->prefetchSize !== null || $this->prefetchCount !== null || $this->aGlobal !== null) {
