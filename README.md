@@ -205,6 +205,25 @@ If an exception is triggered in the `Consumer`, a `nack` will be sent instead to
 
 Note: if your consumer callback throws an exception implementing the `RetryableExceptionInterface` interface, the `nack` message will be sent with the "requeue" flag. The message will be requeued.
 
+Writing your consumer as a class
+--------------------------------
+
+So far, to create a consumer, we used the `Consumer` class that takes a callback as first constructor parameter.
+
+As an alternative, you can extend the `AbstractConsumer` class and implement the `onMessageReceived` method:
+
+```php
+class MyConsumer extends AbstractConsumer
+{
+    public function onMessageReceived($msg)
+    {
+        // Do some stuff.
+    }
+}
+```
+
+
+
 Sending a message to a given queue
 ----------------------------------
 

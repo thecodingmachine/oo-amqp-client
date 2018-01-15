@@ -2,10 +2,8 @@
 
 namespace Mouf\AmqpClient;
 
-class Consumer implements ConsumerInterface
+class Consumer extends AbstractConsumer
 {
-    use ConsumerTrait;
-
     /**
      * @var callable
      */
@@ -22,28 +20,17 @@ class Consumer implements ConsumerInterface
     }
 
     /**
-     * @return callable
-     */
-    public function callback($msg)
-    {
-        $callback = $this->callback;
-
-        try {
-            $callback($msg);
-
-            $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
-        } catch (RetryableExceptionInterface $e) {
-            $msg->delivery_info['channel']->basic_nack($msg->delivery_info['delivery_tag'], true, true);
-        } catch (\Exception $e) {
-            $msg->delivery_info['channel']->basic_nack($msg->delivery_info['delivery_tag'], true, false);
-        }
-    }
-
-    /**
      * @param callable $callback
      */
     public function setCallback($callback)
     {
         $this->callback = $callback;
+    }
+
+    public function onMessageReceived($msg)
+    {
+        $callback = $this->callback;
+
+        $callback($msg);
     }
 }
