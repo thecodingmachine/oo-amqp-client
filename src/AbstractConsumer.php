@@ -2,8 +2,7 @@
 
 namespace Mouf\AmqpClient;
 
-use Doctrine\ORM\ORMException;
-use Mouf\Utils\Log\ErrorLogLogger;
+use Mouf\Utils\Log\Psr\ErrorLogLogger;
 use Psr\Log\LoggerInterface;
 
 abstract class AbstractConsumer implements ConsumerInterface
