@@ -6,8 +6,10 @@ use Mouf\AmqpClient\Client;
 use Mouf\AmqpClient\Consumer;
 use Mouf\AmqpClient\ConsumerService;
 use PhpAmqpLib\Message\AMQPMessage;
+use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 
-class ClientTest extends \PHPUnit_Framework_TestCase
+class ClientTest extends TestCase
 {
     /**
      * @var Client
@@ -52,7 +54,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
                 if ($this->triggerException) {
                     throw new \Exception('boom!');
                 }
-            })
+            }, new NullLogger())
         ]);
         $this->queue->setDurable(true);
 
@@ -65,7 +67,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->deadLetterQueue = new Queue($this->client, 'test_dead_letter_queue', [
             new Consumer(function(AMQPMessage $msg) {
                 $this->deadLetterMsgReceived = $msg;
-            })
+            }, new NullLogger())
         ]);
         $this->deadLetterQueue->setDurable(true);
 
@@ -79,6 +81,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         $this->init();
         $this->exchange->publish(new Message('my message'), 'key');
+        $this->assertTrue(true);
     }
 
     /**
@@ -135,7 +138,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $queue = new Queue($client, 'test_direct_queue', [
             new Consumer(function(AMQPMessage $msg) {
                 $this->msgReceived = $msg;
-            })
+            }, new NullLogger())
         ]);
 
         // The key is the name of the queue.
@@ -156,7 +159,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $queue = new Queue($client, 'test_direct_queue', [
             new Consumer(function(AMQPMessage $msg) {
                 $this->msgReceived = $msg;
-            })
+            }, new NullLogger())
         ]);
 
         // The key is the name of the queue.

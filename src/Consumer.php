@@ -2,6 +2,8 @@
 
 namespace Mouf\AmqpClient;
 
+use Psr\Log\LoggerInterface;
+
 class Consumer extends AbstractConsumer
 {
     /**
@@ -13,9 +15,11 @@ class Consumer extends AbstractConsumer
      * Consumer constructor.
      *
      * @param callable $callback
+     * @param LoggerInterface $logger
      */
-    public function __construct(callable $callback)
+    public function __construct(callable $callback, LoggerInterface $logger = null)
     {
+        parent::__construct($logger);
         $this->callback = $callback;
     }
 

@@ -6,9 +6,9 @@ services:
   - rabbitmq
 
 php:
- - 5.6
  - 7.0
  - 7.1
+ - 7.2
 
 env:
   matrix:
@@ -16,7 +16,7 @@ env:
     - PREFER_LOWEST=""
 
 before_script:
- - composer update --prefer-source $PREFER_LOWEST
+ - composer update $PREFER_LOWEST
 
 script:
  - ./vendor/bin/phpunit
