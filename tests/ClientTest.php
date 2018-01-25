@@ -32,21 +32,25 @@ class ClientTest extends TestCase
     private $deadLetterMsgReceived;
     private $triggerException = false;
 
-    private function makeClient()
+    private function makeClient($port = null)
     {
         global $rabbitmq_host;
         global $rabbitmq_port;
         global $rabbitmq_user;
         global $rabbitmq_password;
 
-        $client = new Client($rabbitmq_host, $rabbitmq_port, $rabbitmq_user, $rabbitmq_password);
+        if (!$port) {
+            $port = $rabbitmq_port;
+        }
+
+        $client = new Client($rabbitmq_host, $port, $rabbitmq_user, $rabbitmq_password);
         $client->setPrefetchCount(1);
         return $client;
     }
 
-    protected function init()
+    protected function init($port = null)
     {
-        $this->client = $this->makeClient();
+        $this->client = $this->makeClient($port);
         $this->exchange = new Exchange($this->client, 'test_exchange', 'fanout');
         $this->queue = new Queue($this->client, 'test_queue', [
             new Consumer(function(AMQPMessage $msg) {
@@ -157,7 +161,7 @@ class ClientTest extends TestCase
     {
         $client = $this->makeClient();
         $queue = new Queue($client, 'test_direct_queue', [
-            new Consumer(function(AMQPMessage $msg) {
+            new Consumer(function (AMQPMessage $msg) {
                 $this->msgReceived = $msg;
             }, new NullLogger())
         ]);
@@ -172,5 +176,14 @@ class ClientTest extends TestCase
         $consumerService->run(true);
 
         $this->assertEquals('hello', $this->msgReceived->getBody());
+    }
+
+    /**
+     * @expectedException \Mouf\AmqpClient\Exception\ConnectionException
+     */
+    public function testConnectionException()
+    {
+        $this->init(1242000042);
+        $this->client->getChannel();
     }
 }
