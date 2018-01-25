@@ -205,6 +205,11 @@ If an exception is triggered in the `Consumer`, a `nack` will be sent instead to
 
 Note: if your consumer callback throws an exception implementing the `RetryableExceptionInterface` interface, the `nack` message will be sent with the "requeue" flag. The message will be requeued.
 
+Note: if your consumer callback throws an exception implementing the `FatalExceptionInterface` interface, the exception will be propagated by the consumer (hence leading to the crash of the consumer script). Otherwise, consumer will continue processing messages.
+
+Exceptions are logged by default using the error_log function. You can override this behaviour by passing a PSR-3 compliant logger to the `AbstractConsumer` constructor.
+
+
 Writing your consumer as a class
 --------------------------------
 
