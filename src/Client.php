@@ -2,9 +2,12 @@
 
 namespace Mouf\AmqpClient;
 
+use PhpAmqpLib\Connection\AbstractConnection;
+use PhpAmqpLib\Connection\AMQPSocketConnection;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Channel\AMQPChannel;
 use Mouf\AmqpClient\Exception\ConnectionException;
+use PhpAmqpLib\Exception\AMQPIOException;
 
 class Client
 {
@@ -60,7 +63,7 @@ class Client
     /**
      * RabbitMq connection.
      *
-     * @var AMQPStreamConnection
+     * @var AbstractConnection
      */
     private $connection = null;
 
@@ -175,13 +178,19 @@ class Client
     {
         if (!$this->connection) {
             try {
-                $this->connection = new AMQPStreamConnection($this->host, $this->port, $this->user, $this->password);
+                if (function_exists('socket_create')) {
+                    $this->connection = new AMQPSocketConnection($this->host, $this->port, $this->user, $this->password);
+                } else {
+                    $this->connection = new AMQPStreamConnection($this->host, $this->port, $this->user, $this->password);
+                }
             } catch (\ErrorException $e) {
                 /* We are trying to catch the exception when the connection if refused */
                 if (preg_match("/.*unable to connect.*Connection refused.*/", $e->__toString())) {
                     throw new ConnectionException("Cannot create the connection", 404, $e);
                 }
                 throw $e;
+            } catch (AMQPIOException $e) {
+                throw new ConnectionException("Cannot create the connection", 404, $e);
             }
             $this->channel = $this->connection->channel();
 
