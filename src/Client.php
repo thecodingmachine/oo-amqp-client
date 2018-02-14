@@ -2,6 +2,7 @@
 
 namespace Mouf\AmqpClient;
 
+use PhpAmqpLib\Connection\AbstractConnection;
 use PhpAmqpLib\Connection\AMQPSocketConnection;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -61,7 +62,7 @@ class Client
     /**
      * RabbitMq connection.
      *
-     * @var AMQPStreamConnection
+     * @var AbstractConnection
      */
     private $connection = null;
 
