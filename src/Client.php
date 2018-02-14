@@ -7,6 +7,7 @@ use PhpAmqpLib\Connection\AMQPSocketConnection;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Channel\AMQPChannel;
 use Mouf\AmqpClient\Exception\ConnectionException;
+use PhpAmqpLib\Exception\AMQPIOException;
 
 class Client
 {
@@ -188,7 +189,7 @@ class Client
                     throw new ConnectionException("Cannot create the connection", 404, $e);
                 }
                 throw $e;
-            } catch (\AMQPIOException $e) {
+            } catch (AMQPIOException $e) {
                 throw new ConnectionException("Cannot create the connection", 404, $e);
             }
             $this->channel = $this->connection->channel();
