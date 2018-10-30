@@ -81,12 +81,123 @@ class Client
      */
     private $rabbitMqObjects = [];
 
-    public function __construct($host, $port, $user, $password)
+    /**
+     * RabbitMq virtual host
+     *
+     * @var string
+     */
+    private $vhost;
+
+    /**
+     * RabbitMq insist
+     *
+     * @var bool
+     */
+    private $insist;
+
+    /**
+     * RabbitMq login method
+     *
+     * @var string
+     */
+    private $login_method;
+
+    /**
+     * RabbitMq login response
+     *
+     * @var null
+     */
+    private $login_response;
+
+    /**
+     * RabbitMq locale
+     *
+     * @var string
+     */
+    private $locale;
+
+    /**
+     * RabbitMq connection timeout
+     *
+     * @var float
+     */
+    private $connection_timeout;
+
+    /**
+     * RabbitMq read write timeout
+     *
+     * @var float
+     */
+    private $read_write_timeout;
+
+    /**
+     * RabbitMq context
+     *
+     * @var null
+     */
+    private $context;
+
+    /**
+     * RabbitMq keep a live
+     *
+     * @var bool
+     */
+    private $keepalive;
+
+    /**
+     * RabbitMq heartbeat
+     *
+     * @var int
+     */
+    private $heartbeat;
+
+    /**
+     * Client constructor.
+     * @param $host
+     * @param $port
+     * @param $user
+     * @param $password
+     * @param string $vhost
+     * @param bool $insist
+     * @param string $login_method
+     * @param null $login_response
+     * @param string $locale
+     * @param float $connection_timeout
+     * @param float $read_write_timeout
+     * @param null $context
+     * @param bool $keepalive
+     * @param int $heartbeat
+     */
+    public function __construct(
+        $host,
+        $port,
+        $user,
+        $password,
+        $vhost = '/',
+        $insist = false,
+        $login_method = 'AMQPLAIN',
+        $login_response = null,
+        $locale = 'en_US',
+        $connection_timeout = 3.0,
+        $read_write_timeout = 3.0,
+        $context = null,
+        $keepalive = false,
+        $heartbeat = 0)
     {
         $this->host = $host;
         $this->port = ($port !== null) ? $port : 5672;
         $this->user = $user;
         $this->password = $password;
+        $this->vhost = $vhost;
+        $this->insist = $insist;
+        $this->login_method = $login_method;
+        $this->login_response = $login_response;
+        $this->locale = $locale;
+        $this->connection_timeout = $connection_timeout;
+        $this->read_write_timeout = $read_write_timeout;
+        $this->context = $context;
+        $this->keepalive = $keepalive;
+        $this->heartbeat = $heartbeat;
     }
 
     /**
@@ -102,6 +213,7 @@ class Client
      * It's for QOS prefetch-size http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.qos.
      *
      * @param int $prefetchSize
+     * @return Client
      */
     public function setPrefetchSize($prefetchSize)
     {
@@ -123,6 +235,7 @@ class Client
      * It's for QOS prefetch-size http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.qos.
      *
      * @param int $prefetchCount
+     * @return Client
      */
     public function setPrefetchCount($prefetchCount)
     {
@@ -144,6 +257,7 @@ class Client
      * It's for QOS prefetch-size http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.qos.
      *
      * @param int $aGlobal
+     * @return Client
      */
     public function setAGlobal($aGlobal)
     {
@@ -173,15 +287,47 @@ class Client
      * Connection to the RabbitMq service with AMQPStreamConnection.
      *
      * @return AMQPChannel
+     * @throws ConnectionException
+     * @throws \ErrorException
      */
     public function getChannel()
     {
         if (!$this->connection) {
             try {
                 if (function_exists('socket_create')) {
-                    $this->connection = new AMQPSocketConnection($this->host, $this->port, $this->user, $this->password);
+                    $this->connection = new AMQPStreamConnection(
+                        $this->host,
+                        $this->port,
+                        $this->user,
+                        $this->password,
+                        $this->vhost,
+                        $this->insist,
+                        $this->login_method,
+                        $this->login_response,
+                        $this->locale,
+                        $this->connection_timeout,
+                        $this->read_write_timeout,
+                        $this->context,
+                        $this->keepalive ,
+                        $this->heartbeat
+                    );
                 } else {
-                    $this->connection = new AMQPStreamConnection($this->host, $this->port, $this->user, $this->password);
+                    $this->connection = new AMQPStreamConnection(
+                        $this->host,
+                        $this->port,
+                        $this->user,
+                        $this->password,
+                        $this->vhost,
+                        $this->insist,
+                        $this->login_method,
+                        $this->login_response,
+                        $this->locale,
+                        $this->connection_timeout,
+                        $this->read_write_timeout,
+                        $this->context,
+                        $this->keepalive ,
+                        $this->heartbeat
+                    );
                 }
             } catch (\ErrorException $e) {
                 /* We are trying to catch the exception when the connection if refused */

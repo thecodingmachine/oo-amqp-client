@@ -36,7 +36,22 @@ The first thing you want to create is a `Client` object. A `Client` represents a
 ```php
 use Mouf\AmqpClient\Client;
 
-$client = new Client($rabbitmq_host, $rabbitmq_port, $rabbitmq_user, $rabbitmq_password);
+$client = new Client(
+    $rabbitmq_host,
+    $rabbitmq_port,
+    $rabbitmq_user,
+    $rabbitmq_password,
+    $rabbitmq_vhost = '/',
+    $rabbitmq_insist = false,
+    $rabbitmq_login_method = 'AMQPLAIN',
+    $rabbitmq_login_response = null,
+    $rabbitmq_locale = 'en_US',
+    $rabbitmq_connection_timeout = 3.0,
+    $rabbitmq_read_write_timeout = 3.0,
+    $rabbitmq_context = null,
+    $rabbitmq_keepalive = false,
+    $rabbitmq_heartbeat = 0
+);
 ```
 
 Note: the `Client` class exposes a number of useful configuration methods (you do not need to use those if you don't know what they do):
